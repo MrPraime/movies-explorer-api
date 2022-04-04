@@ -4,6 +4,7 @@ const User = require('../models/user');
 const NotFoundError = require('../errors/not-found-error');
 const BadRequestError = require('../errors/bad-request-error');
 const ConflictError = require('../errors/conflict-error');
+const { JWT_DEV } = require('../utils/config');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -22,7 +23,7 @@ const login = (req, res, next) => {
         { _id: user._id },
         NODE_ENV === 'production'
           ? JWT_SECRET
-          : 'dev-secret',
+          : JWT_DEV,
         { expiresIn: '7d' },
       );
       res.send({ token });
@@ -66,6 +67,8 @@ const updateUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при обновлении пользователя'));
+      } else if (err.name === 'MongoServerError' && err.code === 11000) {
+        next(new ConflictError('Попытка изменить данные другого пользователя'));
       } else next(err);
     });
 };

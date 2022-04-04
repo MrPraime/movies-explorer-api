@@ -55,12 +55,11 @@ const delMovie = (req, res, next) => {
     .orFail(() => {
       throw new NotFoundError('Фильм не найден');
     })
-    // eslint-disable-next-line consistent-return
-    .then((movie) => {
+    .then(async (movie) => {
       if (movie.owner.toString() !== req.user._id) {
         next(new ForbiddenError('Попытка удалить фильм'));
       } else {
-        return Movies.findByIdAndRemove(req.params.id).then(() => {
+        await Movies.findByIdAndRemove(req.params.id).then(() => {
           res.status(200).send(movie);
         });
       }

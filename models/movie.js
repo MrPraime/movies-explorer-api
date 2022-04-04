@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { urlPattern } = require('../patterns');
+const { urlPattern } = require('../utils/patterns');
 
 const movieSchema = new mongoose.Schema({
   country: {
@@ -57,7 +57,6 @@ const movieSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
     required: true,
-    select: false,
   },
   movieId: {
     type: Number,
